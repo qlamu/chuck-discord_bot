@@ -1,0 +1,30 @@
+[
+    {
+        "name": "joke",
+        "value": "Fetching a random joke"
+    },
+    {
+        "name": "joke [number]",
+        "value": "Fetching a specific joke"
+    },
+    {
+        "name": "joke [category]",
+        "value": "Fetching a random joke from a specified category"
+    },
+    {
+        "name": "jokeCategories",
+        "value": "Fetching the list of joke categories"
+    },
+    {
+        "name": "jokeCount",
+        "value": "Fetching the number of jokes"
+    },
+    {
+        "name": "ping",
+        "value": "Show bot latency"
+    },
+    {
+        "name": "prefix [newPrefix]",
+        "value": "Change the bot prefix"
+    }
+]
