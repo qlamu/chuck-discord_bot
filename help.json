@@ -26,5 +26,9 @@
     {
         "name": "prefix [newPrefix]",
         "value": "Change the bot prefix"
+    },
+    {
+        "name": "yt [youtube_url]",
+        "value": "Play the audio of the video in the audio channel of the user"
     }
 ]

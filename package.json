@@ -1,7 +1,11 @@
 {
   "name": "c-norris-jokes_discord-bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "A discord bot around the icndb.com API, with bonus functions around youtube music streaming.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qlamu/chuck-discord_bot.git"
+  },
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js",

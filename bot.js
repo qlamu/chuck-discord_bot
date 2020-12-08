@@ -1,15 +1,14 @@
 const axios = require("axios");
 const Discord = require("discord.js");
-const client = new Discord.Client();
 const fs = require("fs");
 const ytdl = require("ytdl-core");
 
 const config = require("./config.json");
 const helpFields = require("./help.json");
 
-client.on("ready", () => {
-  console.log(`Logged in as ${client.user.tag}`);
-});
+const client = new Discord.Client();
+
+client.on("ready", () => console.log(`Logged in as ${client.user.tag}`));
 
 client.on("message", (msg) => {
   if (msg.content.startsWith(config.prefix)) {
@@ -26,14 +25,17 @@ client.on("message", (msg) => {
           : `/random?limitTo=[${command[1]}]`;
       else url += "/random";
 
-      axios.get(url).then((response) =>
-        // The API doesn't handle errors prettily
-        msg.channel.send(
-          response.data.value.hasOwnProperty("joke")
-            ? response.data.value.joke
-            : response.data.value
+      axios
+        .get(url)
+        .then((response) =>
+          // The API doesn't handle errors prettily
+          msg.channel.send(
+            response.data.value.hasOwnProperty("joke")
+              ? response.data.value.joke
+              : ":warning: " + response.data.value
+          )
         )
-      );
+        .catch(err => handleErrors(err, msg));
     }
 
     // Get the total number of jokes
@@ -41,20 +43,22 @@ client.on("message", (msg) => {
       axios
         .get("http://api.icndb.com/jokes/count")
         .then((response) =>
-          msg.channel.send(`I've got ${response.data.value} jokes to tell`)
-        );
+          msg.channel.send(`I've got ${response.data.value} jokes to tell.`)
+        )
+        .catch(err => handleErrors(err, msg));
     }
 
     // Get all availables categories
     else if (command[0] == "jokeCategories") {
       axios
         .get("http://api.icndb.com/categories")
-        .then((response) => msg.channel.send(response.data.value.join(", ")));
+        .then((response) => msg.channel.send(response.data.value.join(", ")))
+        .catch(err => handleErrors(err, msg));
     }
 
     // Ping the bot for latency
     else if (command[0] == "ping") {
-      msg.channel.send(`Pong ! ${Date.now() - msg.createdTimestamp}ms\n`);
+      msg.channel.send(`Pong! ${Date.now() - msg.createdTimestamp}ms\n`);
     }
 
     // Change the bot prefix
@@ -75,20 +79,27 @@ client.on("message", (msg) => {
       msg.channel.send(help);
     }
 
-    // Play audio from youtube in user channel
+    // Play audio from YouTube in user channel
     else if (command[0] == "yt" && ytdl.validateURL(command[1])) {
       let channel = msg.member.voice.channel;
       if (channel) {
-        channel.join().then((con) =>
-            con.play(
+        channel
+          .join()
+          .then((conn) =>
+            conn.play(
               ytdl(command[1], { quality: "highestaudio" }).on("end", () =>
                 channel.leave()
               )
             )
           );
-      } else msg.reply(":warning: You have to be in a audio channel to do that")
+      } else msg.reply(":no_entry: You must be in an audio channel to do this");
     }
   }
 });
+
+handleErrors = (err, msg) => {
+  console.log(err);
+  msg.channel.send("Either the API is broken or you can't write proper commands.");
+} 
 
 client.login(config.token);
