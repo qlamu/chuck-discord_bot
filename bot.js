@@ -101,16 +101,18 @@ client.on("message", (msg) => {
 
     // Search 5 videos on YouTube
     else if (command[0] == "ytsearch" && command.length > 1) {
-      ytSearch(command.slice(1).join(" ")).then((response) => {
-        let embed = new Discord.MessageEmbed()
-          .setTitle("YouTube search results")
-          .setColor("#dc3c3c")
-          .setFooter("Play with $yt [video_number]");
-        const videos = response.videos.slice(0, 5);
-        videos.forEach((v, i) => embed.addField(i + " - " + v.title, v.url));
-        ytUrls = videos.map((v) => v.url);
-        msg.channel.send(embed);
-      });
+      ytSearch(command.slice(1).join(" "))
+        .then((response) => {
+          let embed = new Discord.MessageEmbed()
+            .setTitle("YouTube results for _" + command.slice(1).join(" ") + "_")
+            .setColor("#dc3c3c")
+            .setFooter("Play with $yt [video_number]");
+          const videos = response.videos.slice(0, 5);
+          videos.forEach((v, i) => embed.addField(i + " - " + v.title, v.url));
+          ytUrls = videos.map((v) => v.url);
+          msg.channel.send(embed);
+        })
+        .catch((err) => handleErrors(err, msg));
     }
   }
 });

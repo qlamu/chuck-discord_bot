@@ -28,7 +28,11 @@
         "value": "Change the bot prefix"
     },
     {
-        "name": "yt [youtube_url]",
+        "name": "yt [youtube_url OR number_from_ytsearch]",
         "value": "Play the audio of the video in the audio channel of the user"
+    },
+    {
+        "name": "ytsearch [keyword_1] [keyword_2] ...",
+        "value": "Search videos on YouTube, you can play them with $yt [video_number]"
     }
 ]

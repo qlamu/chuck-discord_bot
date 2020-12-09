@@ -5,4 +5,5 @@ services:
   node:
     container_name: chuck_bot
     build: .
+    command: [ "insert_bot_token_here" ]
     restart: always
