@@ -2,11 +2,16 @@ const axios = require("axios");
 const Discord = require("discord.js");
 const fs = require("fs");
 const ytdl = require("ytdl-core");
+const ytSearch = require("yt-search");
 
 const config = require("./config.json");
 const helpFields = require("./help.json");
 
 const client = new Discord.Client();
+
+// Result from the "ytsearch" command, not very clean
+// but I didn't want another file just for this function.
+var ytUrls = [];
 
 client.on("ready", () => console.log(`Logged in as ${client.user.tag}`));
 
@@ -35,7 +40,7 @@ client.on("message", (msg) => {
               : ":warning: " + response.data.value
           )
         )
-        .catch(err => handleErrors(err, msg));
+        .catch((err) => handleErrors(err, msg));
     }
 
     // Get the total number of jokes
@@ -45,7 +50,7 @@ client.on("message", (msg) => {
         .then((response) =>
           msg.channel.send(`I've got ${response.data.value} jokes to tell.`)
         )
-        .catch(err => handleErrors(err, msg));
+        .catch((err) => handleErrors(err, msg));
     }
 
     // Get all availables categories
@@ -53,7 +58,7 @@ client.on("message", (msg) => {
       axios
         .get("http://api.icndb.com/categories")
         .then((response) => msg.channel.send(response.data.value.join(", ")))
-        .catch(err => handleErrors(err, msg));
+        .catch((err) => handleErrors(err, msg));
     }
 
     // Ping the bot for latency
@@ -80,26 +85,39 @@ client.on("message", (msg) => {
     }
 
     // Play audio from YouTube in user channel
-    else if (command[0] == "yt" && ytdl.validateURL(command[1])) {
+    else if (command[0] == "yt" && command[1]) {
+      let url = isNaN(command[1]) ? command[1] : ytUrls[command[1]];
       let channel = msg.member.voice.channel;
-      if (channel) {
+      if (!ytdl.validateURL(url))
+        msg.channel.send(":no_entry: Invalid YouTube url.");
+      else if (!channel)
+        msg.channel.send(":no_entry: You must be in an audio channel.");
+      else {
         channel
           .join()
-          .then((conn) =>
-            conn.play(
-              ytdl(command[1], { quality: "highestaudio" }).on("end", () =>
-                channel.leave()
-              )
-            )
-          );
-      } else msg.reply(":no_entry: You must be in an audio channel to do this");
+          .then((conn) => conn.play(ytdl(url, { quality: "highestaudio" })));
+      }
+    }
+
+    // Search 5 videos on YouTube
+    else if (command[0] == "ytsearch" && command.length > 1) {
+      ytSearch(command.slice(1).join(" ")).then((response) => {
+        let embed = new Discord.MessageEmbed()
+          .setTitle("YouTube search results")
+          .setColor("#dc3c3c")
+          .setFooter("Play with $yt [video_number]");
+        const videos = response.videos.slice(0, 5);
+        videos.forEach((v, i) => embed.addField(i + " - " + v.title, v.url));
+        ytUrls = videos.map((v) => v.url);
+        msg.channel.send(embed);
+      });
     }
   }
 });
 
 handleErrors = (err, msg) => {
   console.log(err);
-  msg.channel.send("Either the API is broken or you can't write proper commands.");
-} 
+  msg.reply("Either the API is broken or you can't write proper commands.");
+};
 
 client.login(config.token);
