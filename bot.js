@@ -68,11 +68,15 @@ client.on("message", (msg) => {
 
     // Change the bot prefix
     else if (command[0] == "prefix" && command[1]) {
-      config.prefix = command[1];
-      fs.writeFile("config.json", JSON.stringify(config), (err) => {
-        msg.channel.send("Prefix updated to " + config.prefix);
-        if (err) msg.channel.send(":warning: Cannot persistently save prefix");
-      });
+      if (/^[^a-zA-Z0-9]$/.test(command[1])) {
+        config.prefix = command[1];
+        fs.writeFile("config.json", JSON.stringify(config), (err) => {
+          msg.channel.send("Prefix updated to " + config.prefix);
+          if (err)
+            msg.channel.send(":warning: Cannot persistently save prefix");
+        });
+      } else
+        msg.channel.send(":warning: The prefix must be a single symbol");
     }
 
     // Show help box
@@ -100,11 +104,12 @@ client.on("message", (msg) => {
     }
 
     // Search 5 videos on YouTube
-    else if (command[0] == "ytsearch" && command.length > 1) {
+    else if (command[0] == "yts" && command.length > 1) {
       ytSearch(command.slice(1).join(" "))
         .then((response) => {
           let embed = new Discord.MessageEmbed()
-            .setTitle("YouTube results for _" + command.slice(1).join(" ") + "_")
+            .setAuthor("YouTube", "https://frama.link/yt-icon")
+            .setTitle("Results for: _" + command.slice(1).join(" ") + "_")
             .setColor("#dc3c3c")
             .setFooter("Play with $yt [video_number]");
           const videos = response.videos.slice(0, 5);
@@ -117,8 +122,7 @@ client.on("message", (msg) => {
   }
 });
 
-handleErrors = (err, msg) => {
-  console.log(err);
+handleErrors = (_err, msg) => {
   msg.reply("Either the API is broken or you can't write proper commands.");
 };
 
