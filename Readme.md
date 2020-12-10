@@ -24,10 +24,10 @@ Once added to a server, the default prefix is `%`, and the following list of com
 
 **%ping**: Show the latency of the bot.
 
-**%prefix [new_prefix]**: Change the bot prefix, the prefix is stored in a file so it will persist when restarting the bot.
+**%prefix [new_prefix]**: Change the bot prefix, the prefix is stored in a file so it will persist when restarting the bot. A prefix must be a single symbol, any symbol should work.
 
-**%yt [youtube_url OR number_from_ytse]**: Stream the audio of the video at `youtube_url` in the sender voice channel. If a YouTube search as been made previously with `%yts`, it can also take the video number as argument to stream its audio.
+**%yt [youtube_url OR number_from_yts]**: Stream the audio of the video at `youtube_url` in the sender voice channel. If a YouTube search as been made previously with `%yts`, it can also take the video number as argument to stream its audio.
 
-> **Note**: Once the stream is ended, the bot does not leave the channel. We could detect the end with a `.on("end")` and leave afterwardq but due to some bugs with Discord.js or ydtl-core the music terminate a bit early if we do so.
+> **Note**: Once the stream is ended, the bot does not leave the channel. We could detect the end with a `.on("end")` and leave afterwards but due to some bugs with Discord.js or ydtl-core the music terminate a bit early if we do so.
 
 **%yts [keyword_1] [keyword_2] ...**: Search five videos on YouTube with the keywords used in the command that can be played by using `$yt [video_number]`.
